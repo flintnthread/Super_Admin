@@ -1,5 +1,7 @@
 package com.ecommerce.superadmin.security;
 
+import com.ecommerce.superadmin.admins.AdminRoles;
+import com.ecommerce.superadmin.admins.AdminUserRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -30,6 +32,7 @@ public class SuperAdminJwtAuthenticationFilter extends OncePerRequestFilter {
     );
 
     private final SuperAdminJwtService jwtService;
+    private final AdminUserRepository adminUserRepository;
     private final ObjectMapper objectMapper;
 
     @Override
@@ -55,6 +58,13 @@ public class SuperAdminJwtAuthenticationFilter extends OncePerRequestFilter {
         Optional<Long> superAdminId = jwtService.parseSuperAdminId(authHeader.substring(7));
         if (superAdminId.isEmpty()) {
             writeUnauthorized(response, "Invalid or expired super admin session.");
+            return;
+        }
+        boolean stillSuperAdmin = adminUserRepository.findById(superAdminId.get())
+                .filter(AdminRoles::isActiveSuperAdmin)
+                .isPresent();
+        if (!stillSuperAdmin) {
+            writeUnauthorized(response, "Super admin access has been removed for this account.");
             return;
         }
 
