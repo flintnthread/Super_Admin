@@ -1,0 +1,7 @@
+# Copy to config/application-local.properties (git-ignored) for local development.
+
+spring.datasource.url=jdbc:mysql://127.0.0.1:3306/flintdb?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=Asia/Kolkata
+spring.datasource.username=root
+spring.datasource.password=your-db-password
+
+app.jwt.secret=replace-with-a-long-random-secret-at-least-32-characters
